@@ -5,7 +5,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 public class GameView {
     private GameField field;
@@ -27,7 +26,7 @@ public class GameView {
         g2.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
         g2.setStroke(Color.GRAY);
 
-        int n = GameField.getSize();
+        int n = GameField.SIZE;
         double cellWidth = canvas.getWidth() / (double)n;
         double cellHeight = canvas.getHeight() / (double)n;
         double cellSize = Double.min(cellHeight, cellWidth);
@@ -38,10 +37,6 @@ public class GameView {
         for (int i = 0; i <=n; i++) {
             g2.strokeLine(0, i*cellSize, n*cellSize, i*cellSize);
         }
-
-        int x = field.getHero().getX();
-        int y = field.getHero().getY();
-        g2.drawImage(heroImage, x*cellSize, y*cellSize, cellSize, cellSize);
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -56,8 +51,18 @@ public class GameView {
                     g2.drawImage(starImage, j*cellSize+0.15*cellSize, i*cellSize+0.15*cellSize, cellSize*0.7, cellSize*0.7);
                 } else if ( value == 3 ) {
                     g2.drawImage(doorImage, j*cellSize, i*cellSize, cellSize, cellSize);
-                }//TODO врагов отдельно в цикле
+                }
             }
+        }
+
+        int x = field.getHero().getX();
+        int y = field.getHero().getY();
+        g2.drawImage(heroImage, x*cellSize, y*cellSize, cellSize, cellSize);
+
+        for (int i = 0; i < GameField.ENEMIES; i++) {
+            x = field.getEnemy(i).getX();
+            y = field.getEnemy(i).getY();
+            g2.drawImage(enemyImage, x*cellSize, y*cellSize, cellSize, cellSize);
         }
     }
 }

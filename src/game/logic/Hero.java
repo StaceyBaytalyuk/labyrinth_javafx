@@ -3,7 +3,6 @@ package game.logic;
 public class Hero {
     private int x;
     private int y;
-    private GameField field;
 
     public Hero(Position position) {
         x = position.getX();

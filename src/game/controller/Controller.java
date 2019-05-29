@@ -28,7 +28,6 @@ public class Controller {
     private GameField field;
     private Score score = new Score(GameField.LEVELS);
 
-    private int level = 0;
     private Timeline timeline;
     private Timeline enemyTimeline;
     private Timeline heroTimeline;
@@ -44,29 +43,8 @@ public class Controller {
         field = new GameField(score, this);
         view = new GameView(field, canvas);
 
-        timeline = new Timeline(new KeyFrame(Duration.millis(1000), e->timerProcessTick()));
-        heroTimeline = new Timeline(new KeyFrame(Duration.millis(100), e->heroProcessTick()));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        heroTimeline.setCycleCount(Animation.INDEFINITE);
+        initializeTimelines();
         start();
-    }
-
-    private void timerProcessTick() {
-        timeText.setText(String.format("%02d:%02d", (seconds[0])/60, (seconds[0])%60));
-        seconds[0]++;
-        field.tick();
-        draw();
-    }
-
-    private void heroProcessTick() {
-        draw();
-    }
-
-    private void draw() {
-        if (view!=null) {
-            view.draw();
-        }
-        starsText.setText("☆  "+ score.getStars());
     }
 
     public void processKey(KeyEvent keyEvent) {
@@ -87,14 +65,15 @@ public class Controller {
         Platform.exit();
     }
 
-    public void start() {
-        timeline.play();
-        heroTimeline.play();
+    public void nextLevel() {
+        stop();
+        score.setTime(seconds[0]);
+        seconds[0] = 0;
+        start();
     }
 
-    public void restart() {
-        heroTimeline.stop();
-        timeline.stop();
+    public void restartLevel() {
+        stop();
         score.setStars(0);
         score.setTime(0);
         seconds[0] = 0;
@@ -102,15 +81,16 @@ public class Controller {
         start();
     }
 
-    public void nextLevel() {
-        heroTimeline.stop();
-        timeline.stop();
-        score.setTime(seconds[0]);
+    private void restartGame() {
+        score = new Score(GameField.LEVELS);
+        field = new GameField(score, this);
+        view = new GameView(field, canvas);
         seconds[0] = 0;
         start();
     }
 
     public void win() {
+        stop();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("You win!");
         alert.setHeaderText("Score: "+score.calculateScore()+"\nCollected stars: "+score.allStars()+"\nTime: "+score.generalTime()+" seconds");
@@ -119,27 +99,71 @@ public class Controller {
         Optional<ButtonType> result = alert.showAndWait();
         ButtonType button = result.orElse(ButtonType.CANCEL);
         if (button == ButtonType.OK) {
-            score = new Score(GameField.LEVELS);
-            field = new GameField(score, this);
-            view = new GameView(field, canvas);
-            seconds[0] = 0;
-            start();
+            restartGame();
         } else {
             exit();
         }
     }
 
     public void loss() {
+        stop();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("You lost!");
         alert.setHeaderText("Play again?");
         alert.setResizable(false);
-        Optional<ButtonType> result = alert.showAndWait();
-        ButtonType button = result.orElse(ButtonType.CANCEL);
-        if (button == ButtonType.OK) {
-            restart();
-        } else {
-            exit();
-        }
+        Platform.runLater( () -> {
+                    Optional<ButtonType> result = alert.showAndWait();
+                    ButtonType button = result.orElse(ButtonType.CANCEL);
+                    if (button == ButtonType.OK) {
+                        restartLevel();
+                    } else {
+                        exit();
+                    }
+                }
+        );
+
     }
+
+    private void start() {
+        timeline.play();
+        heroTimeline.play();
+        enemyTimeline.play();
+    }
+
+    private void stop() {
+        timeline.stop();
+        heroTimeline.stop();
+        enemyTimeline.stop();
+    }
+
+    private void initializeTimelines() {
+        timeline = new Timeline(new KeyFrame(Duration.millis(1000), e->timerProcessTick()));
+        heroTimeline = new Timeline(new KeyFrame(Duration.millis(100), e->heroProcessTick()));
+        enemyTimeline = new Timeline(new KeyFrame(Duration.millis(300), e->enemyProcessTick()));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        heroTimeline.setCycleCount(Animation.INDEFINITE);
+        enemyTimeline.setCycleCount(Animation.INDEFINITE);
+    }
+
+    private void timerProcessTick() {
+        timeText.setText(String.format("%02d:%02d", (seconds[0])/60, (seconds[0])%60));
+        seconds[0]++;
+    }
+
+    private void enemyProcessTick() {
+        field.tick();
+        draw();
+    }
+
+    private void heroProcessTick() {
+        draw();
+    }
+
+    private void draw() {
+        if (view!=null) {
+            view.draw();
+        }
+        starsText.setText("☆  "+ score.getStars());
+    }
+
 }

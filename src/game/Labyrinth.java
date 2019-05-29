@@ -12,7 +12,7 @@ public class Labyrinth extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("game.fxml"));
         primaryStage.setTitle("Labyrinth");
-        primaryStage.setScene(new Scene(root, 600, 650));
+        primaryStage.setScene(new Scene(root, 590, 650));
         primaryStage.setResizable(false);
         primaryStage.show();
     }
