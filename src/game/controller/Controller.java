@@ -32,6 +32,7 @@ public class Controller {
     private Timeline enemyTimeline;
     private Timeline heroTimeline;
     private final int[] seconds = {0};
+    private int enemySpeed;
 
     @FXML
     public void initialize() {
@@ -43,12 +44,36 @@ public class Controller {
         field = new GameField(score, this);
         view = new GameView(field, canvas);
 
+        difficultyDialog();
         initializeTimelines();
         start();
     }
 
+    private void difficultyDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Difficulty");
+        alert.setHeaderText("Select difficulty:");
+        alert.setResizable(false);
+
+        ButtonType easyButton = new ButtonType("Easy");
+        ButtonType mediumButton = new ButtonType("Medium");
+        ButtonType hardButton = new ButtonType("Hard");
+        ButtonType exitButton = new ButtonType("Exit game");
+        alert.getButtonTypes().setAll(easyButton, mediumButton, hardButton, exitButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == easyButton) {
+            enemySpeed = 500;
+        } else if (result.get() == mediumButton) {
+            enemySpeed = 300;
+        } else if (result.get() == hardButton) {
+            enemySpeed = 100;
+        }  else if (result.get() == exitButton) {
+            exit();
+        }
+    }
+
     public void processKey(KeyEvent keyEvent) {
-        System.out.println("pressed");
         switch (keyEvent.getCode()) {
             case LEFT: field.checkCell(Direction.LEFT);
                 break;
@@ -68,6 +93,7 @@ public class Controller {
     public void nextLevel() {
         stop();
         score.setTime(seconds[0]);
+        System.out.println(seconds[0]+" seconds");
         seconds[0] = 0;
         start();
     }
@@ -91,6 +117,8 @@ public class Controller {
 
     public void win() {
         stop();
+        score.setTime(seconds[0]);
+        System.out.println(seconds[0]+" seconds");
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("You win!");
         alert.setHeaderText("Score: "+score.calculateScore()+"\nCollected stars: "+score.allStars()+"\nTime: "+score.generalTime()+" seconds");
@@ -121,7 +149,6 @@ public class Controller {
                     }
                 }
         );
-
     }
 
     private void start() {
@@ -139,7 +166,7 @@ public class Controller {
     private void initializeTimelines() {
         timeline = new Timeline(new KeyFrame(Duration.millis(1000), e->timerProcessTick()));
         heroTimeline = new Timeline(new KeyFrame(Duration.millis(100), e->heroProcessTick()));
-        enemyTimeline = new Timeline(new KeyFrame(Duration.millis(300), e->enemyProcessTick()));
+        enemyTimeline = new Timeline(new KeyFrame(Duration.millis(enemySpeed), e->enemyProcessTick()));
         timeline.setCycleCount(Animation.INDEFINITE);
         heroTimeline.setCycleCount(Animation.INDEFINITE);
         enemyTimeline.setCycleCount(Animation.INDEFINITE);
@@ -159,7 +186,7 @@ public class Controller {
         draw();
     }
 
-    private void draw() {
+    public void draw() {
         if (view!=null) {
             view.draw();
         }

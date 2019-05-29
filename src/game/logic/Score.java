@@ -34,7 +34,7 @@ public class Score {
 
     public int generalTime() {
         int sum = 0;
-        for (int i = 0; i < currentLevel; i++) {
+        for (int i = 0; i < levels; i++) {
             sum += time[i];
         }
         return sum;
@@ -51,8 +51,8 @@ public class Score {
                 score += 10*stars[i];
             } else {
                 int timeBonus = 0;
-                if ( time[i] <= 15 ) timeBonus = 50;
-                else if ( time[i] <= 25 ) timeBonus = 25;
+                if ( time[i] <= 25 ) timeBonus = 50;
+                else if ( time[i] <= 50 ) timeBonus = 25;
                 score += 10*stars[i] + timeBonus;
             }
         }

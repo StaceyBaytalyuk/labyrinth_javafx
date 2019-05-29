@@ -11,22 +11,20 @@ public class Enemy {
         x = position.getX();
         y = position.getY();
         direction = initialDirection;
-        if ( initialDirection == Direction.UP || initialDirection == Direction.DOWN ) {
-            isVertical = true;
-        } else {
-            isVertical = false;
-        }
+        isVertical = initialDirection == Direction.UP || initialDirection == Direction.DOWN;
         this.field = field;
     }
 
     public Position move() {
         Position next = direction.next(new Position(x, y)); //клетка, которая у нас на пути
-        if ( field.getCellValue(next.getX(), next.getY()) == 0 ) { //если стена - меняем направление
+        int value = field.getCellValue(next.getX(), next.getY());
+        if ( value == 0 || value == 3 ) { //стена или дверь - меняем направление
             if (isVertical) {
                 direction = ( (direction == Direction.UP)? Direction.DOWN : Direction.UP);
             } else {
                 direction = ( (direction == Direction.RIGHT)? Direction.LEFT : Direction.RIGHT);
             }
+            next = direction.next(new Position(x, y));
         }
         x = next.getX();
         y = next.getY();

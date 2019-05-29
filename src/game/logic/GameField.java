@@ -10,11 +10,10 @@ public class GameField {
     public static final int LEVELS = 3; // всего уровней
     public static final int ENEMIES = 3;
 
-    private static Map[] map = new Map[LEVELS];
-    private Cell[][] cell;
     private Hero hero;
     private Enemy[] enemy = new Enemy[ENEMIES];
     private List<Position> currentEnemyPosition = new ArrayList<>(ENEMIES);
+    private Cell[][] cell;
 
     private int currentLevel;
     private int stars;
@@ -30,7 +29,7 @@ public class GameField {
         initializeEnemies();
     }
 
-    public void tick() {
+    public void tick() { // движение врагов
         for (int i = 0; i < ENEMIES; i++) {
             currentEnemyPosition.set(i, enemy[i].move());
             if ( hero.getPosition().equals(currentEnemyPosition.get(i)) ) {
@@ -40,11 +39,11 @@ public class GameField {
     }
 
     private void nextLevel() {
-        score.setStars(stars);
+        score.setStars(stars); // сохранить звёзды текущего уровня
         stars = 0;
         controller.nextLevel();
         score.nextLevel();
-        cell = map[currentLevel].getArray();
+        cell = map[currentLevel].getArray(); // загрузить новую карту
         hero = new Hero(heroStartPosition);
         initializeEnemies();
     }
@@ -67,7 +66,7 @@ public class GameField {
         int y = position.getY();
         int value = cell[y][x].getCurrentValue();
 
-        for (int i = 0; i < ENEMIES; i++) {
+        for (int i = 0; i < ENEMIES; i++) { // если там враг
             if ( position.equals(enemy[i].getPosition()) ) {
                 controller.loss();
             }
@@ -80,13 +79,16 @@ public class GameField {
             hero.move(direction);
         } else if ( value == 3 ) {
             hero.move(direction);
+            controller.draw();
             currentLevel++;
             if ( currentLevel < LEVELS ) {
                 nextLevel();
             } else {
                 controller.win();
             }
-        } else if ( value < 0 ) {
+        } else if ( value == -1 ) {
+            hero.move(direction);
+            controller.draw();
             controller.loss();
         }
     }
@@ -128,6 +130,7 @@ public class GameField {
     private static Position heroStartPosition = new Position(1, 10);
     private static Position[] enemyStartPosition = { new Position(1, 1), new Position(5, 1), new Position(10, 10) };
     private static Direction[] enemyStartDirection = { Direction.RIGHT, Direction.DOWN, Direction.UP };
+    private static Map[] map = new Map[LEVELS];
 
     static {
         int[][] arr = {

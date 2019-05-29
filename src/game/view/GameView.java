@@ -12,8 +12,7 @@ public class GameView {
     private Image heroImage = new Image(getClass().getResourceAsStream("/images/hero.png"));
     private Image enemyImage = new Image(getClass().getResourceAsStream("/images/enemy.png"));
     private Image starImage = new Image(getClass().getResourceAsStream("/images/star.png"));
-    private Image doorImage = new Image(getClass().getResourceAsStream("/images/door.png"));
-
+    private Image doorImage = new Image(getClass().getResourceAsStream("/images/door.jpg"));
 
     public GameView(GameField field, Canvas canvas) {
         this.field = field;
@@ -38,6 +37,10 @@ public class GameView {
             g2.strokeLine(0, i*cellSize, n*cellSize, i*cellSize);
         }
 
+        int x = field.getHero().getX();
+        int y = field.getHero().getY();
+        g2.drawImage(heroImage, x*cellSize+0.15*cellSize, y*cellSize+0.15*cellSize, cellSize*0.7, cellSize*0.7);
+
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 int value = field.getCellValue(j, i);
@@ -55,14 +58,10 @@ public class GameView {
             }
         }
 
-        int x = field.getHero().getX();
-        int y = field.getHero().getY();
-        g2.drawImage(heroImage, x*cellSize, y*cellSize, cellSize, cellSize);
-
         for (int i = 0; i < GameField.ENEMIES; i++) {
             x = field.getEnemy(i).getX();
             y = field.getEnemy(i).getY();
-            g2.drawImage(enemyImage, x*cellSize, y*cellSize, cellSize, cellSize);
+            g2.drawImage(enemyImage, x*cellSize+0.15*cellSize, y*cellSize+0.15*cellSize, cellSize*0.7, cellSize*0.7);
         }
     }
 }
