@@ -3,8 +3,8 @@ package game.logic;
 public class Score {
     private final int levels;
     private int currentLevel;
-    private int[] time; // секунд на каждом уровне
-    private int[] stars; // звёзд на каждом уровне
+    private int[] time;
+    private int[] stars;
 
     public Score(int levels) {
         this.levels = levels;
@@ -14,6 +14,10 @@ public class Score {
 
     public void nextLevel() {
         currentLevel++;
+    }
+
+    public void setTime(int n) {
+        time[currentLevel] = n;
     }
 
     public void setStars(int n) {
@@ -38,10 +42,6 @@ public class Score {
             sum += time[i];
         }
         return sum;
-    }
-
-    public void setTime(int n) {
-        time[currentLevel] = n;
     }
 
     public int calculateScore() {

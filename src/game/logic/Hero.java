@@ -24,6 +24,6 @@ public class Hero {
     }
 
     public Position getPosition() {
-        return new Position(x,y);
+        return new Position(x, y);
     }
 }

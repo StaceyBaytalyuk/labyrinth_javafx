@@ -1,35 +1,33 @@
 package game.logic;
 
 import game.controller.Controller;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameField {
-    public static final int SIZE = 12; // кол-во клеток
-    public static final int LEVELS = 3; // всего уровней
+    public static final int SIZE = 12;
+    public static final int LEVELS = 3;
     public static final int ENEMIES = 3;
 
     private Hero hero;
     private Enemy[] enemy = new Enemy[ENEMIES];
-    private List<Position> currentEnemyPosition = new ArrayList<>(ENEMIES);
     private Cell[][] cell;
 
     private int currentLevel;
     private int stars;
     private Score score;
     private Controller controller;
+    private List<Position> currentEnemyPosition = new ArrayList<>(ENEMIES);
 
     public GameField(Score score, Controller controller) {
         this.score = score;
         this.controller = controller;
-        currentLevel = 0;
         cell = map[currentLevel].getArray();
         hero = new Hero(heroStartPosition);
         initializeEnemies();
     }
 
-    public void tick() { // движение врагов
+    public void tick() {
         for (int i = 0; i < ENEMIES; i++) {
             currentEnemyPosition.set(i, enemy[i].move());
             if ( hero.getPosition().equals(currentEnemyPosition.get(i)) ) {
@@ -38,21 +36,10 @@ public class GameField {
         }
     }
 
-    private void nextLevel() {
-        score.setStars(stars); // сохранить звёзды текущего уровня
+    public void reset() { // сброс перед рестартом
         stars = 0;
-        controller.nextLevel();
-        score.nextLevel();
-        cell = map[currentLevel].getArray(); // загрузить новую карту
-        hero = new Hero(heroStartPosition);
-        initializeEnemies();
-    }
-
-    // для рестарта
-    public void reset() {
-        stars = 0;
-        for (int i = 1; i < SIZE -1; i++) {
-            for (int j = 1; j < SIZE -1; j++) {
+        for (int i = 1; i < SIZE-1; i++) {
+            for (int j = 1; j < SIZE-1; j++) {
                 cell[i][j].toDefault();
             }
         }
@@ -64,9 +51,9 @@ public class GameField {
         Position position = direction.next(new Position(hero.getX(), hero.getY()));
         int x = position.getX();
         int y = position.getY();
-        int value = cell[y][x].getCurrentValue();
+        int value = cell[y][x].getCurrentValue(); // содержание клетки, в которую идёт герой
 
-        for (int i = 0; i < ENEMIES; i++) { // если там враг
+        for (int i = 0; i < ENEMIES; i++) {
             if ( position.equals(enemy[i].getPosition()) ) {
                 controller.loss();
             }
@@ -103,6 +90,16 @@ public class GameField {
 
     public Enemy getEnemy(int number) {
         return enemy[number];
+    }
+
+    private void nextLevel() {
+        score.setStars(stars); // сохранить звёзды текущего уровня
+        stars = 0;
+        controller.nextLevel();
+        score.nextLevel();
+        cell = map[currentLevel].getArray(); // загрузить новую карту
+        hero = new Hero(heroStartPosition);
+        initializeEnemies();
     }
 
     private void takeStar(int x, int y) {

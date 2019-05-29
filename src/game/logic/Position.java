@@ -19,10 +19,6 @@ public class Position {
         return y;
     }
 
-    public Position getPosition() {
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

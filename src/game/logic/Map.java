@@ -1,13 +1,13 @@
 package game.logic;
 
-public class Map { // образец, по которому заполняется поле во время (пере)загрузки уровня
-    private int[][] array; // что содержит каждая клетка
+public class Map { // образец, по которому заполняется поле при загрузке уровня
+    private int[][] array;
 
     public Map(int[][] array) {
         this.array = array;
     }
 
-    public Cell[][] getArray() { // TODO проверить не меняет ли копия содержание оригинала
+    public Cell[][] getArray() {
         int size = array.length;
         Cell[][] result = new Cell[size][size];
         int[] row;

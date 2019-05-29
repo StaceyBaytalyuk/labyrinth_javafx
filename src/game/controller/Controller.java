@@ -38,64 +38,33 @@ public class Controller {
     public void initialize() {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
-        canvas.widthProperty().addListener(e->draw());
-        canvas.heightProperty().addListener(e->draw());
-
         field = new GameField(score, this);
         view = new GameView(field, canvas);
-
         difficultyDialog();
         initializeTimelines();
         start();
     }
 
-    private void difficultyDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Difficulty");
-        alert.setHeaderText("Select difficulty:");
-        alert.setResizable(false);
-
-        ButtonType easyButton = new ButtonType("Easy");
-        ButtonType mediumButton = new ButtonType("Medium");
-        ButtonType hardButton = new ButtonType("Hard");
-        ButtonType exitButton = new ButtonType("Exit game");
-        alert.getButtonTypes().setAll(easyButton, mediumButton, hardButton, exitButton);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == easyButton) {
-            enemySpeed = 500;
-        } else if (result.get() == mediumButton) {
-            enemySpeed = 300;
-        } else if (result.get() == hardButton) {
-            enemySpeed = 100;
-        }  else if (result.get() == exitButton) {
-            exit();
+    public void processKey(KeyEvent keyEvent) {
+        switch (keyEvent.getCode()) {
+            case LEFT: field.checkCell(Direction.LEFT); break;
+            case RIGHT: field.checkCell(Direction.RIGHT); break;
+            case UP: field.checkCell(Direction.UP); break;
+            case DOWN: field.checkCell(Direction.DOWN); break;
+            case E: exit(); break;
+            case R: restartLevel(); break;
         }
     }
 
-    public void processKey(KeyEvent keyEvent) {
-        switch (keyEvent.getCode()) {
-            case LEFT: field.checkCell(Direction.LEFT);
-                break;
-            case RIGHT: field.checkCell(Direction.RIGHT);
-                break;
-            case UP: field.checkCell(Direction.UP);
-                break;
-            case DOWN: field.checkCell(Direction.DOWN);
-                break;
+    public void draw() {
+        if (view!=null) {
+            view.draw();
         }
+        starsText.setText("☆  "+ score.getStars());
     }
 
     public void exit() {
         Platform.exit();
-    }
-
-    public void nextLevel() {
-        stop();
-        score.setTime(seconds[0]);
-        System.out.println(seconds[0]+" seconds");
-        seconds[0] = 0;
-        start();
     }
 
     public void restartLevel() {
@@ -107,10 +76,10 @@ public class Controller {
         start();
     }
 
-    private void restartGame() {
-        score = new Score(GameField.LEVELS);
-        field = new GameField(score, this);
-        view = new GameView(field, canvas);
+    public void nextLevel() {
+        stop();
+        score.setTime(seconds[0]);
+        System.out.println(seconds[0]+" seconds");
         seconds[0] = 0;
         start();
     }
@@ -151,6 +120,14 @@ public class Controller {
         );
     }
 
+    private void restartGame() {
+        score = new Score(GameField.LEVELS);
+        field = new GameField(score, this);
+        view = new GameView(field, canvas);
+        seconds[0] = 0;
+        start();
+    }
+
     private void start() {
         timeline.play();
         heroTimeline.play();
@@ -186,11 +163,34 @@ public class Controller {
         draw();
     }
 
-    public void draw() {
-        if (view!=null) {
-            view.draw();
+    private void difficultyDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Difficulty");
+        alert.setHeaderText("Select difficulty:");
+        alert.setResizable(false);
+
+        ButtonType easyButton = new ButtonType("Easy");
+        ButtonType mediumButton = new ButtonType("Medium");
+        ButtonType hardButton = new ButtonType("Hard");
+        ButtonType exitButton = new ButtonType("Exit game");
+        alert.getButtonTypes().setAll(easyButton, mediumButton, hardButton, exitButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == easyButton) {
+            enemySpeed = 500;
+        } else if (result.get() == mediumButton) {
+            enemySpeed = 300;
+        } else if (result.get() == hardButton) {
+            enemySpeed = 100;
+        }  else if (result.get() == exitButton) {
+            exit();
         }
-        starsText.setText("☆  "+ score.getStars());
     }
 
+    public void helpDialog() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Help");
+        alert.setHeaderText("Rules: get to the gate, collect stars, avoid pits and enemies.\nControls: move - arrows, exit - E, restart level - R");
+        alert.showAndWait();
+    }
 }

@@ -4,7 +4,7 @@ public class Enemy {
     private int x;
     private int y;
     private Direction direction;
-    private final boolean isVertical;
+    private final boolean isVertical; // направление движения
     private GameField field;
 
     public Enemy(Position position, Direction initialDirection, GameField field) {
