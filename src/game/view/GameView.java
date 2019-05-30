@@ -36,7 +36,7 @@ public class GameView {
             for (int j = 0; j < n; j++) {
                 int value = field.getCellValue(j, i);
                 if ( value == 0 ) {
-                    g2.setFill(Color.rgb(0, 50, 15));
+                    g2.setFill(Color.rgb(0, 60, 30));
                     g2.fillRect(j*cellSize, i*cellSize, cellSize, cellSize);
                 } else if ( value == -1 ) {
                     g2.setFill(Color.rgb(100, 75, 50));

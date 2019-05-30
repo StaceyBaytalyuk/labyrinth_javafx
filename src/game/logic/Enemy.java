@@ -16,7 +16,7 @@ public class Enemy {
     }
 
     public Position move() {
-        Position next = direction.next(new Position(x, y)); //клетка, которая у нас на пути
+        Position next = direction.next(new Position(x, y));
         int value = field.getCellValue(next.getX(), next.getY());
         if ( value == 0 || value == 3 ) { //стена или дверь - меняем направление
             if (isVertical) {
